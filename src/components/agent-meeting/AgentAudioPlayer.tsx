@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import { useParticipant } from "@videosdk.live/react-sdk";
 
 interface AgentAudioPlayerProps {
@@ -11,15 +11,40 @@ export const AgentAudioPlayer: React.FC<AgentAudioPlayerProps> = ({
   const audioRef = useRef<HTMLAudioElement>(null);
   const { micStream } = useParticipant(participantId);
 
+  const tryPlay = useCallback(() => {
+    if (audioRef.current && audioRef.current.srcObject) {
+      audioRef.current.play().catch((err) => {
+        console.warn("Audio play blocked, will retry on user interaction:", err.message);
+      });
+    }
+  }, []);
+
+  // Set up the audio stream when micStream changes
   useEffect(() => {
     if (audioRef.current && micStream) {
       const mediaStream = new MediaStream([micStream.track]);
       audioRef.current.srcObject = mediaStream;
-      audioRef.current.play().catch(console.error);
+      audioRef.current.volume = 1.0;
+      tryPlay();
     }
-  }, [micStream]);
+  }, [micStream, tryPlay]);
+
+  // Retry audio playback on any user interaction (handles autoplay policy)
+  useEffect(() => {
+    const handleInteraction = () => {
+      tryPlay();
+    };
+
+    document.addEventListener("click", handleInteraction, { once: false });
+    document.addEventListener("keydown", handleInteraction, { once: false });
+
+    return () => {
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("keydown", handleInteraction);
+    };
+  }, [tryPlay]);
 
   return (
-    <audio ref={audioRef} autoPlay playsInline style={{ display: "none" }} />
+    <audio ref={audioRef} autoPlay playsInline />
   );
 };
