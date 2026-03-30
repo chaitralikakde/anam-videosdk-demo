@@ -26,6 +26,7 @@ interface AgentDashboardProps {
 }
 
 // Simple SVG Line Chart Component for Timeline Graph
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const MetricGraph: React.FC<{ data: any[]; pipelineType: string | null }> = ({ data, pipelineType }) => {
 
     if (!data || data.length === 0) return <div className="graph-placeholder">Waiting for data...</div>;
@@ -236,6 +237,7 @@ const LatencyBarChart: React.FC<{ history: any[]; pipelineType: string | null }>
 
 
 // Icons
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Zap: React.FC<{ size?: number; className?: string }> = ({ size = 24, className = "" }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
@@ -301,7 +303,7 @@ export const AgentDashboard: React.FC<AgentDashboardProps> = ({
     const [pipelineType, setPipelineType] = useState<string | null>(null);
     const [metricsHistory, setMetricsHistory] = useState<any[]>([]);
     const [transcripts, setTranscripts] = useState<Transcript[]>([]);
-    const [events, setEvents] = useState<EventLog[]>([]);
+    const [, setEvents] = useState<EventLog[]>([]);
     const lastFullTurnRef = useRef<boolean>(false);
     const greetingShownRef = useRef<boolean>(false);
     const lastEventTimeRef = useRef<number>(0);

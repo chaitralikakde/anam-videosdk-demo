@@ -2,10 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
 import { AgentAudioPlayer } from "./AgentAudioPlayer";
 import { AgentVideoPlayer } from "./AgentVideoPlayer";
-import { WaveAvatar } from "./WaveAvatar";
-import { VoiceActivityIndicator } from "./VoiceActivityIndicator";
 import { AgentDashboard } from "./AgentDashboard";
-import MicWithSlash from "../../icons/MicWithSlash";
 
 interface MeetingInterfaceProps {
   meetingId: string;
@@ -23,10 +20,10 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   onJoined,
 }) => {
   const [isJoined, setIsJoined] = useState(false);
-  const [connectionError, setConnectionError] = useState<string | null>(null);
+  const [_connectionError, setConnectionError] = useState<string | null>(null);
   const joinAttempted = useRef(false);
 
-  const { join, leave, toggleMic, participants, localParticipant, localMicOn } =
+  const { join, leave, participants } =
     useMeeting({
       onMeetingJoined: () => {
         setIsJoined(true);
@@ -80,14 +77,6 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     }
   };
 
-  const handleToggleMic = () => {
-    if (isJoined) {
-      toggleMic();
-    } else {
-
-    }
-  };
-
   const handleDisconnect = () => {
     try {
       leave();
@@ -113,7 +102,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     (p) => p.displayName?.includes("Agent") || p.displayName?.includes("Haley")
   );
 
-  const { isActiveSpeaker, webcamOn } = useParticipant(
+  const { webcamOn } = useParticipant(
     agentParticipant?.id || ""
   );
 
