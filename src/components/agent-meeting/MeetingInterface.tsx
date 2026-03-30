@@ -10,11 +10,17 @@ import MicWithSlash from "../../icons/MicWithSlash";
 interface MeetingInterfaceProps {
   meetingId: string;
   onDisconnect: () => void;
+  /** When true, automatically joins the meeting as soon as the provider is ready */
+  autoJoin?: boolean;
+  /** Fired once the meeting is successfully joined */
+  onJoined?: () => void;
 }
 
 export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   meetingId,
   onDisconnect,
+  autoJoin = false,
+  onJoined,
 }) => {
   const [isJoined, setIsJoined] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
@@ -23,10 +29,10 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   const { join, leave, toggleMic, participants, localParticipant, localMicOn } =
     useMeeting({
       onMeetingJoined: () => {
-
         setIsJoined(true);
         setConnectionError(null);
         joinAttempted.current = true;
+        onJoined?.();
       },
       onMeetingLeft: () => {
 
@@ -46,9 +52,20 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       },
     });
 
+  // Auto-join when the prop is set (meeting was created programmatically)
   useEffect(() => {
-    // We no longer auto-join here. The user must click "Connect".
-    // But if we wanted to support auto-join via prop, we could do it here.
+    if (autoJoin && !joinAttempted.current) {
+      joinAttempted.current = true;
+      setTimeout(() => {
+        try {
+          join();
+        } catch (error) {
+          console.error("Auto-join error:", error);
+          setConnectionError("Failed to join meeting");
+        }
+      }, 500);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleConnect = () => {
