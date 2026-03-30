@@ -20,7 +20,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   onJoined,
 }) => {
   const [isJoined, setIsJoined] = useState(false);
-  const [_connectionError, setConnectionError] = useState<string | null>(null);
+  const [, setConnectionError] = useState<string | null>(null);
   const joinAttempted = useRef(false);
 
   const { join, leave, participants } =
